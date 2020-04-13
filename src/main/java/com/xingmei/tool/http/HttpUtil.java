@@ -23,6 +23,7 @@ import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -121,10 +122,13 @@ public class HttpUtil {
         String temp = "";
         try {
             response = HttpUtil.getHttpClient(httpType).execute(httpGet);
+            if (!"200".equals("" + response.getStatusLine().getStatusCode())) {
+                throw new RuntimeException(response.getStatusLine().getReasonPhrase());
+            }
             HttpEntity entity = response.getEntity();
             temp = EntityUtils.toString(entity, "UTF-8");
         } catch (Exception e) {
-
+            throw new RuntimeException(e.getCause());
         }
         return temp;
     }
@@ -165,10 +169,13 @@ public class HttpUtil {
                 httpPost.setEntity(new UrlEncodedFormEntity(params));
             }
             response = HttpUtil.getHttpClient(httpType).execute(httpPost);
+            if (!"200".equals("" + response.getStatusLine().getStatusCode())) {
+                throw new RuntimeException(response.getStatusLine().getReasonPhrase());
+            }
             HttpEntity entity = response.getEntity();
             temp = EntityUtils.toString(entity, "UTF-8");
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e.getCause());
         }
 
         return temp;
@@ -230,7 +237,12 @@ public class HttpUtil {
     }
 
     public static void main(String[] args) {
-        String res = (String) HttpUtil.sendHttpsGet("http://www.baidu.com", null, null);
+        Map<String, String> headerMap = new HashMap<>();
+        headerMap.put("requestHead", "1");
+        Map<String, String> paramMap = new HashMap<>();
+        paramMap.put("userName", "xiaoming");
+        paramMap.put("password", "1234");
+        String res = (String) HttpUtil.sendHttpPost("http://localhost:8080/studydemo/logintest", headerMap, paramMap);
         System.out.println(res);
     }
 

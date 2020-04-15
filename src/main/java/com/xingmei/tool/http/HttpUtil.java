@@ -27,6 +27,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 1.发送http请求 <br>
+ * 2.发送https请求 <br>
+ */
 public class HttpUtil {
 
     private static CloseableHttpClient httpClient;

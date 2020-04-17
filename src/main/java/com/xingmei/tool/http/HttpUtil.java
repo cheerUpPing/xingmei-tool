@@ -1,5 +1,6 @@
 package com.xingmei.tool.http;
 
+import com.alibaba.fastjson.JSON;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -10,6 +11,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
@@ -138,7 +140,7 @@ public class HttpUtil {
     }
 
     /**
-     * 发生htt post请求
+     * 发生http post请求
      *
      * @param requestUrl
      * @param headerMap
@@ -182,6 +184,69 @@ public class HttpUtil {
             throw new RuntimeException(e.getCause());
         }
 
+        return temp;
+    }
+
+    /**
+     * 发生http post body请求
+     *
+     * @param requestUrl
+     * @param headerMap
+     * @param paramObj
+     * @return
+     */
+    public static String sendHttpPostBody(HttpType httpType, String requestUrl, Map<String, String> headerMap, Object paramObj) {
+        return sendPostBody(HttpType.HTTP, requestUrl, headerMap, paramObj);
+    }
+
+    /**
+     * 发生https post body请求
+     *
+     * @param requestUrl
+     * @param headerMap
+     * @param paramObj
+     * @return
+     */
+    public static String sendHttpsPostBody(HttpType httpType, String requestUrl, Map<String, String> headerMap, Object paramObj) {
+        return sendPostBody(HttpType.HTTPS_UNSAFE, requestUrl, headerMap, paramObj);
+    }
+
+    /**
+     * 发生http post body请求
+     *
+     * @param requestUrl
+     * @param headerMap
+     * @param paramObj
+     * @return
+     */
+    private static String sendPostBody(HttpType httpType, String requestUrl, Map<String, String> headerMap, Object paramObj) {
+        // get method
+        HttpPost httpPost = new HttpPost(requestUrl);
+
+        // set header
+        if (MapUtils.isNotEmpty(headerMap)) {
+            for (Map.Entry<String, String> entry : headerMap.entrySet()) {
+                httpPost.setHeader(entry.getKey(), entry.getValue());
+            }
+        }
+        //response
+        HttpResponse response = null;
+        //get response into String
+        String temp = "";
+        try {
+            if (paramObj != null && !"".equals(paramObj)) {
+                StringEntity entity = new StringEntity(JSON.toJSONString(paramObj), "application/json", "UTF-8");
+                httpPost.setEntity(entity);
+            }
+            response = HttpUtil.getHttpClient(httpType).execute(httpPost);
+            if (!"200".equals("" + response.getStatusLine().getStatusCode())) {
+                throw new RuntimeException(response.getStatusLine().getReasonPhrase());
+            }
+            HttpEntity responseEntity = response.getEntity();
+            temp = EntityUtils.toString(responseEntity, "UTF-8");
+        } catch (IOException e) {
+            throw new RuntimeException(e.getCause());
+        }
         return temp;
     }
 

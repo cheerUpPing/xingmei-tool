@@ -64,18 +64,6 @@ public class HttpUtil {
     }
 
     /**
-     * 发生http post请求
-     *
-     * @param requestUrl
-     * @param headerMap
-     * @param requestParamMap
-     * @return
-     */
-    public static String sendHttpPost(String requestUrl, Map<String, String> headerMap, Map<String, String> requestParamMap) {
-        return HttpUtil.post(HttpType.HTTP, requestUrl, headerMap, requestParamMap);
-    }
-
-    /**
      * 发送https get请求 相信所有证书
      *
      * @param requestUrl
@@ -84,18 +72,6 @@ public class HttpUtil {
      */
     public static String sendHttpsGet(String requestUrl, Map<String, String> headerMap, Map<String, String> requestParamMap) {
         return HttpUtil.get(HttpType.HTTPS_UNSAFE, requestUrl, headerMap, requestParamMap);
-    }
-
-    /**
-     * 发生https post请求 相信所有证书
-     *
-     * @param requestUrl
-     * @param headerMap
-     * @param requestParamMap
-     * @return
-     */
-    public static String sendHttpsPost(String requestUrl, Map<String, String> headerMap, Map<String, String> requestParamMap) {
-        return HttpUtil.post(HttpType.HTTPS_UNSAFE, requestUrl, headerMap, requestParamMap);
     }
 
     private static String get(HttpType httpType, String requestUrl, Map<String, String> headerMap, Map<String, String> requestParamMap) {
@@ -140,54 +116,6 @@ public class HttpUtil {
     }
 
     /**
-     * 发生http post请求
-     *
-     * @param requestUrl
-     * @param headerMap
-     * @param requestParamMap
-     * @return
-     */
-    private static String post(HttpType httpType, String requestUrl, Map<String, String> headerMap, Map<String, String> requestParamMap) {
-        // get method
-        HttpPost httpPost = new HttpPost(requestUrl);
-
-        // set header
-        if (MapUtils.isNotEmpty(headerMap)) {
-            for (Map.Entry<String, String> entry : headerMap.entrySet()) {
-                httpPost.setHeader(entry.getKey(), entry.getValue());
-            }
-        }
-
-        List<NameValuePair> params = new ArrayList<NameValuePair>();
-        //set params
-        if (MapUtils.isNotEmpty(requestParamMap)) {
-            for (Map.Entry<String, String> entry : requestParamMap.entrySet()) {
-                params.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
-            }
-        }
-
-        //response
-        HttpResponse response = null;
-        //get response into String
-        String temp = "";
-        try {
-            if (CollectionUtils.isNotEmpty(params)) {
-                httpPost.setEntity(new UrlEncodedFormEntity(params));
-            }
-            response = HttpUtil.getHttpClient(httpType).execute(httpPost);
-            if (!"200".equals("" + response.getStatusLine().getStatusCode())) {
-                throw new RuntimeException(response.getStatusLine().getReasonPhrase());
-            }
-            HttpEntity entity = response.getEntity();
-            temp = EntityUtils.toString(entity, "UTF-8");
-        } catch (IOException e) {
-            throw new RuntimeException(e.getCause());
-        }
-
-        return temp;
-    }
-
-    /**
      * 发生http post body请求
      *
      * @param requestUrl
@@ -195,7 +123,7 @@ public class HttpUtil {
      * @param paramObj
      * @return
      */
-    public static String sendHttpPostBody(HttpType httpType, String requestUrl, Map<String, String> headerMap, Object paramObj) {
+    public static String sendHttpPost(String requestUrl, Map<String, String> headerMap, Object paramObj) {
         return sendPostBody(HttpType.HTTP, requestUrl, headerMap, paramObj);
     }
 
@@ -207,7 +135,7 @@ public class HttpUtil {
      * @param paramObj
      * @return
      */
-    public static String sendHttpsPostBody(HttpType httpType, String requestUrl, Map<String, String> headerMap, Object paramObj) {
+    public static String sendHttpsPost(String requestUrl, Map<String, String> headerMap, Object paramObj) {
         return sendPostBody(HttpType.HTTPS_UNSAFE, requestUrl, headerMap, paramObj);
     }
 
@@ -306,12 +234,10 @@ public class HttpUtil {
     }
 
     public static void main(String[] args) {
-        Map<String, String> headerMap = new HashMap<>();
-        headerMap.put("requestHead", "1");
-        Map<String, String> paramMap = new HashMap<>();
-        paramMap.put("userName", "xiaoming");
-        paramMap.put("password", "1234");
-        String res = (String) HttpUtil.sendHttpPost("http://localhost:8080/studydemo/logintest", headerMap, paramMap);
+        Map<String, Object> headerMap = new HashMap<>();
+        headerMap.put("name", "小红");
+        headerMap.put("age", 12);
+        String res = (String) HttpUtil.sendHttpsPost("http://localhost:8080/studydemo/request/param/queryUserObj", null, headerMap);
         System.out.println(res);
     }
 

@@ -1,6 +1,6 @@
 package com.xingmei.tool.image;
 
-import com.xingmei.tool.file.FIleUtil;
+import com.xingmei.tool.file.FileUtil;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 
@@ -9,6 +9,10 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ImageUtil {
 
@@ -34,7 +38,7 @@ public class ImageUtil {
     public static String imageBase64Encode(File imageFile) throws IOException {
         BufferedImage bufferedImage = ImageIO.read(imageFile);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ImageIO.write(bufferedImage, FIleUtil.getFileType(imageFile), byteArrayOutputStream);
+        ImageIO.write(bufferedImage, FileUtil.getFileType(imageFile), byteArrayOutputStream);
         return Base64.encodeBase64String(byteArrayOutputStream.toByteArray());
     }
 
@@ -54,8 +58,14 @@ public class ImageUtil {
     }
 
     public static void main(String[] args) throws IOException {
-        File file = new File("D:\\test\\3ad1668da63c67a9dc421238938dfb8c.jpg");
-        System.out.println(imageBase64Encode(file));
-        imageBase64Decode(imageBase64Encode(file), "d:\\test\\abc.jpg");
+        List<File> fileList = new ArrayList<>();
+        Map<String, File> fileMap = new HashMap<>();
+        if (fileMap.containsKey(null)){
+            System.out.println("==========");
+        }
+        for (File file1 : fileList){
+            System.out.println(file1.getAbsoluteFile());
+        }
     }
+
 }

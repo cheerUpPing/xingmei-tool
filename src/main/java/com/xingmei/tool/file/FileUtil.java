@@ -2,7 +2,7 @@ package com.xingmei.tool.file;
 
 import java.io.File;
 
-public class FIleUtil {
+public class FileUtil {
 
     /**
      * 获取文件拓展名
@@ -12,7 +12,7 @@ public class FIleUtil {
      */
     public static String getFileType(File file) {
         String fileName = file.getName();
-        return FIleUtil.getFileType(fileName);
+        return FileUtil.getFileType(fileName);
     }
 
     /**
